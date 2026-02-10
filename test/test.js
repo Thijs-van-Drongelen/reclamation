@@ -33,10 +33,28 @@ test('validateReclamation accepts valid data', () => {
   assert(result === true, 'Should return true for valid data');
 });
 
+test('validateReclamation accepts zero as valid value', () => {
+  const data = { id: '1', name: 'Test', count: 0 };
+  const result = validateReclamation(data, ['id', 'name', 'count']);
+  assert(result === true, 'Should accept 0 as a valid value');
+});
+
+test('validateReclamation accepts false as valid value', () => {
+  const data = { id: '1', name: 'Test', active: false };
+  const result = validateReclamation(data, ['id', 'name', 'active']);
+  assert(result === true, 'Should accept false as a valid value');
+});
+
 test('validateReclamation rejects missing fields', () => {
   const data = { id: '1', name: 'Test' };
   const result = validateReclamation(data, ['id', 'name', 'email']);
   assert(result === false, 'Should return false for missing fields');
+});
+
+test('validateReclamation rejects empty string fields', () => {
+  const data = { id: '1', name: '', email: 'test@test.com' };
+  const result = validateReclamation(data, ['id', 'name', 'email']);
+  assert(result === false, 'Should return false for empty string fields');
 });
 
 // Test priority calculation
