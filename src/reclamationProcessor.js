@@ -1,21 +1,13 @@
-// Reclamation processor with duplicated code patterns
+// Reclamation processor - refactored to remove duplication
+
+const { validateReclamation } = require('./validator');
+const { calculatePriority } = require('./priorityCalculator');
+const { generateReferenceNumber } = require('./referenceGenerator');
 
 function processUserReclamation(reclamation) {
   // Validate reclamation
-  if (!reclamation.id) {
-    console.error('Error: Reclamation ID is required');
-    return false;
-  }
-  if (!reclamation.name) {
-    console.error('Error: User name is required');
-    return false;
-  }
-  if (!reclamation.email) {
-    console.error('Error: Email is required');
-    return false;
-  }
-  if (!reclamation.issue) {
-    console.error('Error: Issue description is required');
+  const requiredFields = ['id', 'name', 'email', 'issue'];
+  if (!validateReclamation(reclamation, requiredFields)) {
     return false;
   }
 
@@ -28,22 +20,11 @@ function processUserReclamation(reclamation) {
   console.log(`Purchase Date: ${reclamation.purchaseDate}`);
 
   // Calculate processing priority
-  const today = new Date();
-  const purchaseDate = new Date(reclamation.purchaseDate);
-  const daysSincePurchase = Math.floor((today - purchaseDate) / (1000 * 60 * 60 * 24));
-  
-  let priority = 'low';
-  if (daysSincePurchase < 7) {
-    priority = 'high';
-  } else if (daysSincePurchase < 30) {
-    priority = 'medium';
-  }
-  
+  const priority = calculatePriority(reclamation.purchaseDate);
   console.log(`Priority: ${priority}`);
 
   // Generate reference number
-  const timestamp = Date.now();
-  const referenceNumber = `USER-${reclamation.id}-${timestamp}`;
+  const referenceNumber = generateReferenceNumber('USER', reclamation.id);
   console.log(`Reference Number: ${referenceNumber}`);
 
   return true;
@@ -51,20 +32,8 @@ function processUserReclamation(reclamation) {
 
 function processBusinessReclamation(reclamation) {
   // Validate reclamation
-  if (!reclamation.id) {
-    console.error('Error: Reclamation ID is required');
-    return false;
-  }
-  if (!reclamation.companyName) {
-    console.error('Error: Company name is required');
-    return false;
-  }
-  if (!reclamation.contactEmail) {
-    console.error('Error: Contact email is required');
-    return false;
-  }
-  if (!reclamation.issue) {
-    console.error('Error: Issue description is required');
+  const requiredFields = ['id', 'companyName', 'contactEmail', 'issue'];
+  if (!validateReclamation(reclamation, requiredFields)) {
     return false;
   }
 
@@ -77,22 +46,11 @@ function processBusinessReclamation(reclamation) {
   console.log(`Order Date: ${reclamation.orderDate}`);
 
   // Calculate processing priority
-  const today = new Date();
-  const orderDate = new Date(reclamation.orderDate);
-  const daysSinceOrder = Math.floor((today - orderDate) / (1000 * 60 * 60 * 24));
-  
-  let priority = 'low';
-  if (daysSinceOrder < 7) {
-    priority = 'high';
-  } else if (daysSinceOrder < 30) {
-    priority = 'medium';
-  }
-  
+  const priority = calculatePriority(reclamation.orderDate);
   console.log(`Priority: ${priority}`);
 
   // Generate reference number
-  const timestamp = Date.now();
-  const referenceNumber = `BUSINESS-${reclamation.id}-${timestamp}`;
+  const referenceNumber = generateReferenceNumber('BUSINESS', reclamation.id);
   console.log(`Reference Number: ${referenceNumber}`);
 
   return true;
